@@ -97,6 +97,9 @@ exports.findAll = (req, res) => {
 
                     User.findAll({ where: condition })
                         .then(data => {
+                            const datas = {
+                                data: data
+                            };
                             res.send(data);
                         })
                         .catch(err => {

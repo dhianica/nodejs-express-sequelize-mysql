@@ -24,5 +24,6 @@ db.userTokens = require("./user_token.model.js")(sequelize, Sequelize);
 db.configs = require("./config.model.js")(sequelize, Sequelize);
 db.configDetails = require("./config_detail.model.js")(sequelize, Sequelize);
 db.orgStructures = require("./org_structure.model.js")(sequelize, Sequelize);
+db.pois = require("./poi.model.js")(sequelize, Sequelize);
 
 module.exports = db;
