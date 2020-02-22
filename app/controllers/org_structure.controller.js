@@ -93,8 +93,23 @@ exports.findAll = (req, res) => {
 
                 if (valid != null) { //If not null then user input is in database already.
                     const org_structure_name = req.query.org_structure_name;
-                    var condition = org_structure_name ? { org_structure_name: { [Op.like]: `%${org_structure_name}%` } } : null;
+                    const parent_id = req.query.parent_id;
+                    let condition = "";
+                    const condition1 = org_structure_name ? { org_structure_name: { [Op.like]: `%${org_structure_name}%` } } : null;
+                    const condition2 = parent_id ? { parent_id: { [Op.is]: `${parent_id}` } } : null;
 
+                    if (condition1 != null && condition2 == null) {
+                        condition = condition1;
+                    }
+                    else if (condition1 == null && condition2 != null) {
+                        condition = condition2;
+                    }
+                    else if (condition1 != null && condition2 != null) {
+                        condition = {
+                            [Op.and]: [condition1, condition2]
+                        };
+                    }
+                    
                     OrgStructure.findAll({ where: condition })
                         .then(data => {
                             res.send(data);

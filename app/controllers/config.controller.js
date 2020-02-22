@@ -92,7 +92,22 @@ exports.findAll = (req, res) => {
 
                 if (valid != null) { //If not null then user input is in database already.
                     const config_name = req.query.config_name;
-                    var condition = config_name ? { config_name: { [Op.like]: `%${config_name}%` } } : null;
+                    const config_type = req.query.config_type;
+                    let condition = "";
+                    const condition1 = config_name ? { config_name: { [Op.like]: `%${config_name}%` } } : null;
+                    const condition2 = config_type ? { config_type: { [Op.eq]: `${config_type}` } } : null;
+
+                    if (condition1 != null && condition2 == null) {
+                        condition = condition1;
+                    }
+                    else if (condition1 == null && condition2 != null) {
+                        condition = condition2;
+                    }
+                    else if (condition1 != null && condition2 != null) {
+                        condition = {
+                            [Op.and]: [condition1, condition2]
+                        };
+                    }
 
                     Config.findAll({ where: condition })
                         .then(data => {
