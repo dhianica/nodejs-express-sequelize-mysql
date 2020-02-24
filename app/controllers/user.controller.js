@@ -198,10 +198,15 @@ exports.login = (req, res) => {
                         expired_timestamp: expiredTimestamp,
                     };
 
+                    const datas = {
+                        org_structure_id: data[0].org_structure_id
+                    }
+
                     UserToken.create(userToken);
                     
                     res.send({
-                        accessToken: userToken
+                        accessToken: userToken,
+                        data: datas
                     });
                 }
                 else {

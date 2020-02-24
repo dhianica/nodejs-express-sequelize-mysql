@@ -93,9 +93,24 @@ exports.findAll = (req, res) => {
                 if (valid != null) { //If not null then user input is in database already.
                     const config_name = req.query.config_name;
                     const config_type = req.query.config_type;
-                    let condition = "";
+                    const res_1 = req.query.res_1;
+                    const res_2 = req.query.res_2;
+                    const res_3 = req.query.res_3;
+                    const res_4 = req.query.res_4;
+                    const res_5 = req.query.res_5;
+
+                    let condition = null;
                     const condition1 = config_name ? { config_name: { [Op.like]: `%${config_name}%` } } : null;
                     const condition2 = config_type ? { config_type: { [Op.eq]: `${config_type}` } } : null;
+
+                    let conditionRes = null;
+                    const condition_res_1 = res_1 ? { res_1: { [Op.eq]: `${res_1}` } } : null;
+                    const condition_res_2 = res_2 ? { res_2: { [Op.eq]: `${res_2}` } } : null;
+                    const condition_res_3 = res_3 ? { res_3: { [Op.eq]: `${res_3}` } } : null;
+                    const condition_res_4 = res_4 ? { res_4: { [Op.eq]: `${res_4}` } } : null;
+                    const condition_res_5 = res_5 ? { res_5: { [Op.eq]: `${res_5}` } } : null;
+
+                    let finalCondition = null;
 
                     if (condition1 != null && condition2 == null) {
                         condition = condition1;
@@ -109,7 +124,39 @@ exports.findAll = (req, res) => {
                         };
                     }
 
-                    Config.findAll({ where: condition })
+                    if (condition_res_1 != null && condition_res_2 == null && condition_res_3 == null && condition_res_4 == null && condition_res_5 == null) {
+                        conditionRes = condition_res_1;
+                    }
+                    else if (condition_res_1 == null && condition_res_2 != null && condition_res_3 == null && condition_res_4 == null && condition_res_5 == null) {
+                        conditionRes = condition_res_2;
+                    }
+                    else if (condition_res_1 == null && condition_res_2 == null && condition_res_3 != null && condition_res_4 == null && condition_res_5 == null) {
+                        conditionRes = condition_res_3;
+                    } 
+                    else if (condition_res_1 == null && condition_res_2 == null && condition_res_3 == null && condition_res_4 != null && condition_res_5 == null) {
+                        conditionRes = condition_res_4;
+                    }
+                    else if (condition_res_1 == null && condition_res_2 == null && condition_res_3 == null && condition_res_4 == null && condition_res_5 != null) {
+                        conditionRes = condition_res_5;
+                    }
+
+                    if (condition != null && conditionRes == null) {
+                        finalCondition = condition;
+                    }
+                    else if (condition == null && conditionRes != null) {
+                        finalCondition = conditionRes;
+                    }
+                    else if (condition != null && conditionRes != null) {
+                        finalCondition = {
+                            [Op.and]: [condition, conditionRes]
+                        };
+                    }
+
+
+                    Config.findAll({ 
+                            where: finalCondition,
+                        order: [['config_type', 'ASC'], ['config_name', 'ASC']]
+                        })
                         .then(data => {
                             res.send(data);
                         })

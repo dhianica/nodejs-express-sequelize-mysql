@@ -94,23 +94,47 @@ exports.findAll = (req, res) => {
                 if (valid != null) { //If not null then user input is in database already.
                     const org_structure_name = req.query.org_structure_name;
                     const parent_id = req.query.parent_id;
+                    const id = req.query.id;
                     let condition = "";
                     const condition1 = org_structure_name ? { org_structure_name: { [Op.like]: `%${org_structure_name}%` } } : null;
-                    const condition2 = parent_id ? { parent_id: { [Op.is]: `${parent_id}` } } : null;
+                    const condition2 = parent_id ? { parent_id: { [Op.eq]: `${parent_id}` } } : null;
+                    const condition3 = id ? { id: { [Op.eq]: `${id}` } } : null;
 
-                    if (condition1 != null && condition2 == null) {
+                    if (condition1 != null && condition2 == null && condition3 == null) {
                         condition = condition1;
                     }
-                    else if (condition1 == null && condition2 != null) {
+                    else if (condition1 == null && condition2 != null && condition3 == null) {
                         condition = condition2;
                     }
-                    else if (condition1 != null && condition2 != null) {
+                    else if (condition1 == null && condition2 == null && condition3 != null) {
+                        condition = condition3;
+                    }
+                    else if (condition1 != null && condition2 != null && condition3 == null) {
                         condition = {
                             [Op.and]: [condition1, condition2]
                         };
                     }
+                    else if (condition1 != null && condition2 == null && condition3 != null) {
+                        condition = {
+                            [Op.and]: [condition1, condition3]
+                        };
+                    }
+                    else if (condition1 == null && condition2 != null && condition3 != null) {
+                        condition = {
+                            [Op.or]: [condition2, condition3]
+                        };
+                    }
+
+                    else if (condition1 != null && condition2 != null && condition3 != null) {
+                        condition = {
+                            [Op.and]: [condition1, condition2, condition3]
+                        };
+                    }
                     
-                    OrgStructure.findAll({ where: condition })
+                    OrgStructure.findAll({
+                            where: condition,
+                            order: [['parent_id', 'ASC'], ['id', 'ASC']]
+                        })
                         .then(data => {
                             res.send(data);
                         })
