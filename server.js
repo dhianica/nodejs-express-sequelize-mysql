@@ -32,6 +32,7 @@ require("./app/routes/config.routes")(app);
 require("./app/routes/config_detail.routes")(app);
 require("./app/routes/org_structure.routes")(app);
 require("./app/routes/poi.routes")(app);
+require("./app/routes/map.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

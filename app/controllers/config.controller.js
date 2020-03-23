@@ -155,7 +155,7 @@ exports.findAll = (req, res) => {
 
                     Config.findAll({ 
                             where: finalCondition,
-                        order: [['config_type', 'ASC'], ['config_name', 'ASC']]
+                            order: [['config_type', 'ASC'], ['num_sort', 'ASC'], ['config_name', 'ASC']]
                         })
                         .then(data => {
                             res.send(data);

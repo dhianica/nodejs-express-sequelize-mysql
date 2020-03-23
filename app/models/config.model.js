@@ -23,6 +23,9 @@ module.exports = (sequelize, Sequelize) => {
         },
         res_5: {
             type: Sequelize.STRING
+        },
+        num_sort: {
+            type: Sequelize.INTEGER
         }
     });
 

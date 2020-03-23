@@ -12,6 +12,9 @@ module.exports = (sequelize, Sequelize) => {
         map_id: {
             type: Sequelize.INTEGER
         },
+        map_spatial: {
+            type: Sequelize.GEOMETRY
+        },
         res_1: {
             type: Sequelize.STRING
         },

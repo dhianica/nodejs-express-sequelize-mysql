@@ -132,6 +132,20 @@ exports.findAll = (req, res) => {
                     }
                     
                     OrgStructure.findAll({
+                            attributes: [
+                                'id', 
+                                'parent_id', 
+                                'org_structure_name', 
+                                'org_structure_description', 
+                                'map_id',
+                                'res_1',
+                                'res_2',
+                                'res_3',
+                                'res_4',
+                                'res_5',
+                                'createdAt',
+                                'updatedAt'
+                            ],
                             where: condition,
                             order: [['parent_id', 'ASC'], ['id', 'ASC']]
                         })

@@ -1,5 +1,6 @@
 const db = require("../models");
 const User = db.users;
+const OrgStructure = db.orgStructures;
 const UserToken = db.userTokens;
 const Op = db.Sequelize.Op;
 const bcrypt = require('bcrypt');
@@ -197,17 +198,27 @@ exports.login = (req, res) => {
                         expired_date: expiredDate,
                         expired_timestamp: expiredTimestamp,
                     };
+                    OrgStructure.findByPk(data[0].org_structure_id)
+                    .then(orgStructures => {
+                        const datas = {
+                            org_structure_id: data[0].org_structure_id,
+                            map_id: orgStructures.map_id
+                        }
 
-                    const datas = {
-                        org_structure_id: data[0].org_structure_id
-                    }
+                        UserToken.create(userToken);
 
-                    UserToken.create(userToken);
-                    
-                    res.send({
-                        accessToken: userToken,
-                        data: datas
+                        res.send({
+                            accessToken: userToken,
+                            data: datas
+                        });
+                    })
+                    .catch(err => {
+                        res.status(500).send({
+                            message:
+                                err.message || "Some error occurred while retrieving Organization Structure."
+                        });
                     });
+                    
                 }
                 else {
                     res.status(500).send({
