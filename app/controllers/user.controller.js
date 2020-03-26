@@ -198,11 +198,12 @@ exports.login = (req, res) => {
                         expired_date: expiredDate,
                         expired_timestamp: expiredTimestamp,
                     };
-                    OrgStructure.findByPk(data[0].org_structure_id)
-                    .then(orgStructures => {
+
+                    if (data[0].org_structure_id === 0) {
                         const datas = {
-                            org_structure_id: data[0].org_structure_id,
-                            map_id: orgStructures.map_id
+                            org_structure_id: 0,
+                            parent_id: 0,
+                            map_id: 0
                         }
 
                         UserToken.create(userToken);
@@ -211,13 +212,29 @@ exports.login = (req, res) => {
                             accessToken: userToken,
                             data: datas
                         });
-                    })
-                    .catch(err => {
-                        res.status(500).send({
-                            message:
-                                err.message || "Some error occurred while retrieving Organization Structure."
+                    } else {
+                        OrgStructure.findByPk(data[0].org_structure_id)
+                        .then(orgStructures => {
+                            const datas = {
+                                org_structure_id: data[0].org_structure_id,
+                                parent_id: orgStructures.parent_id,
+                                map_id: orgStructures.map_id
+                            }
+
+                            UserToken.create(userToken);
+
+                            res.send({
+                                accessToken: userToken,
+                                data: datas
+                            });
+                        })
+                        .catch(err => {
+                            res.status(500).send({
+                                message:
+                                    err.message || "Some error occurred while retrieving Organization Structure."
+                            });
                         });
-                    });
+                    }
                     
                 }
                 else {

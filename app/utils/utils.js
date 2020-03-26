@@ -16,3 +16,14 @@ exports.checkValidToken = function (token, done) { //Check the database if User 
             done(err);
         });
 };
+
+exports.createTreeJsonObject = function (listData) {
+    return listData.reduce((map, node) => {
+        map.i[node.map_id] = node
+        node._children = []
+        node.parent_id === 0 ?
+            map.result.push(node) :
+            map.i[node.parent_id]._children.push(node)
+        return map
+    }, { i: {}, result: [] }).result
+}

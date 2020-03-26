@@ -1,9 +1,10 @@
 module.exports = {
   HOST: "localhost",
   USER: "root",
-  PASSWORD: "",
+  PASSWORD: "sz123",
   DB: "dashboard_polda",
   dialect: "mysql",
+  port: 3308,
   pool: {
     max: 5,
     min: 0,

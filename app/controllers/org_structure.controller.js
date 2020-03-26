@@ -92,6 +92,8 @@ exports.findAll = (req, res) => {
                 }
 
                 if (valid != null) { //If not null then user input is in database already.
+                    const isTree = req.query.isTree;
+                    const object = req.query.object;
                     const org_structure_name = req.query.org_structure_name;
                     const parent_id = req.query.parent_id;
                     const id = req.query.id;
@@ -121,10 +123,9 @@ exports.findAll = (req, res) => {
                     }
                     else if (condition1 == null && condition2 != null && condition3 != null) {
                         condition = {
-                            [Op.or]: [condition2, condition3]
+                            [Op.and]: [condition2, condition3]
                         };
                     }
-
                     else if (condition1 != null && condition2 != null && condition3 != null) {
                         condition = {
                             [Op.and]: [condition1, condition2, condition3]
@@ -150,7 +151,17 @@ exports.findAll = (req, res) => {
                             order: [['parent_id', 'ASC'], ['id', 'ASC']]
                         })
                         .then(data => {
-                            res.send(data);
+                            if (isTree === '1') {
+                                // if (object === 'table') {
+                                //     const datas = utils.createTreeTableJsonObject(JSON.parse(JSON.stringify(data)))
+                                //     res.send(datas)
+                                // } else {
+                                const datas = utils.createTreeJsonObject(JSON.parse(JSON.stringify(data)))
+                                res.send(datas)
+                                // }
+                            } else {
+                                res.send(data)
+                            }
                         })
                         .catch(err => {
                             res.status(500).send({
