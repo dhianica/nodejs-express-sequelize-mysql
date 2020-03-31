@@ -1,5 +1,6 @@
 const db = require("../models");
 const OrgStructure = db.orgStructures;
+const sequelize = db.Sequelize;
 const Op = db.Sequelize.Op;
 const jwt = require('jsonwebtoken');
 const accessTokenSecret = 'shhhhh';
@@ -26,6 +27,7 @@ exports.findAll = (req, res) => {
                 }
 
                 if (valid != null) { //If not null then user input is in database already.
+                    const point = req.query.point;
                     const id = req.query.id;
                     const parent_id = req.query.parent_id;
                     const map_id = req.query.map_id;
@@ -59,23 +61,35 @@ exports.findAll = (req, res) => {
                             condition_res_5
                         ]
                     };
-                    
-                    OrgStructure.findAll({
-                            // attributes: [
-                            //     'id',
-                            //     'parent_id',
-                            //     'org_structure_name',
-                            //     'org_structure_description',
-                            //     'map_id',
-                            //     ['map_spatial', 'features'],
-                            //     'res_1',
-                            //     'res_2',
-                            //     'res_3',
-                            //     'res_4',
-                            //     'res_5',
-                            //     'createdAt',
-                            //     'updatedAt'
-                            // ],
+                    if (point === '1') {
+                        OrgStructure.findAll({
+                            attributes: [
+                                'id',
+                                'parent_id',
+                                'org_structure_name',
+                                'org_structure_description',
+                                'map_id',
+                                [sequelize.fn('ST_Centroid', sequelize.col('map_spatial')), 'map_spatial'],
+                                'res_1',
+                                'res_2',
+                                'res_3',
+                                'res_4',
+                                'res_5',
+                            ],
+                            where: finalCondition,
+                            order: [['parent_id', 'ASC'], ['id', 'ASC']]
+                        })
+                            .then(data => {
+                                res.send(data);
+                            })
+                            .catch(err => {
+                                res.status(500).send({
+                                    message:
+                                        err.message || "Some error occurred while retrieving Map."
+                                });
+                            });
+                    } else {
+                        OrgStructure.findAll({
                             where: finalCondition,
                             order: [['parent_id', 'ASC'], ['id', 'ASC']]
                         })
@@ -88,6 +102,7 @@ exports.findAll = (req, res) => {
                                     err.message || "Some error occurred while retrieving Map."
                             });
                         });
+                    }
                 } else {
                     res.status(401).send({
                         message: "Token has expired"
